@@ -1,0 +1,41 @@
+plugins {
+    id 'net.corda.plugins.publish-utils'
+    id 'com.jfrog.artifactory'
+    id 'biz.aQute.bnd.builder'
+    id 'java-library'
+}
+
+description 'The Kotlin Stdlib JDK8 extension as an OSGi bundle.'
+
+dependencies {
+    api "org.jetbrains.kotlin:kotlin-osgi-bundle:$kotlin_version"
+    api "org.jetbrains:annotations:$jetbrains_annotations_version"
+    api project(path: ':kotlin-stdlib-jdk7-osgi', configuration: 'osgi')
+    bundle "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+
+def jar = tasks.named('jar', Jar) {
+    archiveVersion = kotlin_version
+    archiveBaseName = 'kotlin-stdlib-jdk8-osgi'
+
+    bnd kotlinProvider
+
+    bnd """\
+Bundle-SymbolicName: net.corda.kotlin-stdlib-jdk8.osgi-bundle
+Bundle-Name: Kotlin JDK8 classes
+"""
+}
+
+tasks.named('sourceJar', Jar) {
+    from 'README.md'
+    include 'README.md'
+}
+
+tasks.named('javadocJar', Jar) {
+    from 'README.md'
+    include 'README.md'
+}
+
+publish {
+    name jar.flatMap { it.archiveBaseName }
+}

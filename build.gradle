@@ -1,0 +1,100 @@
+import java.util.jar.JarFile
+import static java.util.stream.Collectors.joining
+
+plugins {
+    id 'net.corda.plugins.publish-utils'
+    id 'com.jfrog.artifactory'
+}
+
+String getPackageNames(File file) {
+    new JarFile(file).withCloseable { jar ->
+        jar.stream()
+           .filter { !it.directory }
+           .map { it.name }
+           .filter { !it.startsWith('META-INF/') }
+           .map { it.substring(0, it.lastIndexOf('/')).replace('/', '.') }
+           .distinct()
+           .sorted()
+           .collect(joining(','))
+    }
+}
+
+subprojects {
+    group 'net.corda.kotlin'
+    version kotlin_version
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations {
+        bundle {
+            transitive = false
+        }
+    }
+
+    ext {
+        kotlinProvider = project.provider {
+            File file = configurations.bundle.singleFile
+            String fileURI = file.toURI().toString()
+            """\
+-include: jar:$fileURI!/META-INF/MANIFEST.MF
+-includeresource: @$fileURI
+-exportcontents: ${getPackageNames(file)}
+-fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning
+"""
+        }
+    }
+
+    tasks.withType(GenerateModuleMetadata).configureEach {
+        enabled = false
+    }
+}
+
+bintrayConfig {
+    user = System.getenv('CORDA_BINTRAY_USER')
+    key = System.getenv('CORDA_BINTRAY_KEY')
+    repo = 'corda'
+    org = 'r3'
+    licenses = ['Apache-2.0']
+    vcsUrl = 'https://github.com/corda/kotlin-stdlib-jdk-osgi'
+    projectUrl = 'https://github.com/corda/kotlin-stdlib-jdk-osgi'
+    gpgSign = true
+    gpgPassphrase = System.getenv('CORDA_BINTRAY_GPG_PASSPHRASE')
+    publications = [
+        'kotlin-stdlib-jdk7-osgi',
+        'kotlin-stdlib-jdk8-osgi'
+    ]
+    license {
+        name = 'Apache-2.0'
+        url = 'https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt'
+        distribution = 'repo'
+    }
+    developer {
+        name = 'JetBrains'
+    }
+}
+
+artifactory {
+    publish {
+        contextUrl = artifactory_contextUrl
+        repository {
+            repoKey = 'corda-dependencies'
+            username = project.findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME') ?: System.getProperty('corda.artifactory.username')
+            password = project.findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_APIKEY') ?: System.getProperty('corda.artifactory.password')
+        }
+
+        defaults {
+            // The root project has applied 'publish-utils' but has nothing to publish.
+            if (project != rootProject) {
+                publications(project.extensions.publish.name())
+            }
+        }
+    }
+}
+
+wrapper {
+    gradleVersion = '6.7'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
