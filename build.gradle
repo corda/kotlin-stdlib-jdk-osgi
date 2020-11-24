@@ -46,6 +46,11 @@ subprojects {
         }
     }
 
+    tasks.withType(Jar).configureEach {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+
     tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
     }
