@@ -99,7 +99,7 @@ artifactory {
 }
 
 wrapper {
-    gradleVersion = '6.7.1'
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '6.8.3'
+    distributionType = Wrapper.DistributionType.BIN
 }
 
