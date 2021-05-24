@@ -11,12 +11,18 @@ pluginManagement {
         id 'org.jetbrains.kotlin.jvm' version kotlin_version
         id 'com.jfrog.artifactory' version artifactory_version
         id 'net.corda.plugins.publish-utils' version publish_utils_version
-        id 'com.gradle.enterprise' version '3.4.1'
+        id 'com.gradle.enterprise' version '3.6.1'
     }
 }
 
 plugins {
     id 'com.gradle.enterprise'
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
 }
 
 rootProject.name = 'Kotlin OSGi Bundles'
