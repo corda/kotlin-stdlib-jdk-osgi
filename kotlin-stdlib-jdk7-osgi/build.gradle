@@ -1,7 +1,7 @@
 plugins {
-    id 'net.corda.plugins.publish-utils'
     id 'com.jfrog.artifactory'
     id 'biz.aQute.bnd.builder'
+    id 'maven-publish'
     id 'java-library'
 }
 
@@ -32,20 +32,6 @@ Bundle-Name: Kotlin JDK7 classes
 """
 }
 
-tasks.named('sourceJar', Jar) {
-    from 'README.md'
-    include 'README.md'
-}
-
-tasks.named('javadocJar', Jar) {
-    from 'README.md'
-    include 'README.md'
-}
-
 artifacts {
     osgi jar
-}
-
-publish {
-    name jar.flatMap { it.archiveBaseName }
 }

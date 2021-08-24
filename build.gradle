@@ -2,7 +2,6 @@ import java.util.jar.JarFile
 import static java.util.stream.Collectors.joining
 
 plugins {
-    id 'net.corda.plugins.publish-utils'
     id 'com.jfrog.artifactory'
 }
 
@@ -19,7 +18,7 @@ String getPackageNames(File file) {
     }
 }
 
-subprojects {
+subprojects { sub ->
     group 'net.corda.kotlin'
     version kotlin_version
 
@@ -31,7 +30,7 @@ subprojects {
     }
 
     ext {
-        kotlinProvider = project.provider {
+        kotlinProvider = provider {
             File file = configurations.bundle.singleFile
             String fileURI = file.toURI().toString()
             """\
@@ -51,29 +50,64 @@ subprojects {
     tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
     }
-}
 
-bintrayConfig {
-    user = System.getenv('CORDA_BINTRAY_USER')
-    key = System.getenv('CORDA_BINTRAY_KEY')
-    repo = 'corda'
-    org = 'r3'
-    licenses = ['Apache-2.0']
-    vcsUrl = 'https://github.com/corda/kotlin-stdlib-jdk-osgi'
-    projectUrl = 'https://github.com/corda/kotlin-stdlib-jdk-osgi'
-    gpgSign = true
-    gpgPassphrase = System.getenv('CORDA_BINTRAY_GPG_PASSPHRASE')
-    publications = [
-        'kotlin-stdlib-jdk7-osgi',
-        'kotlin-stdlib-jdk8-osgi'
-    ]
-    license {
-        name = 'Apache-2.0'
-        url = 'https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt'
-        distribution = 'repo'
-    }
-    developer {
-        name = 'JetBrains'
+    pluginManager.withPlugin('maven-publish') {
+        publishing {
+            publications {
+                create(sub.name, MavenPublication) {
+                    pluginManager.withPlugin('java-library') {
+                        from components.java
+
+                        artifact tasks.register('sourcesJar', Jar) {
+                            archiveClassifier = 'sources'
+                            from 'README.md'
+                            include 'README.md'
+                        }
+
+                        artifact tasks.register('javadocJar', Jar) {
+                            archiveClassifier = 'javadoc'
+                            from 'README.md'
+                            include 'README.md'
+                        }
+                    }
+
+                    pom {
+                        sub.afterEvaluate {
+                            name = sub.name
+                            description = sub.description
+                        }
+                        url = 'https://github.com/corda/kotlin-stdlib-jdk-osgi'
+
+                        scm {
+                            url = 'https://github.com/corda/kotlin-stdlib-jdk-osgi'
+                        }
+
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt'
+                            distribution = 'repo'
+                        }
+
+                        developer {
+                            name = 'Kotlin Team'
+                            organization = 'JetBrains'
+                            organizationUrl = 'https://www.jetbrains.com'
+                        }
+                    }
+                }
+            }
+        }
+
+        tasks.register('install') {
+            group = 'publishing'
+            dependsOn 'publishToMavenLocal'
+        }
+
+        pluginManager.withPlugin('com.jfrog.artifactory') {
+            artifactoryPublish {
+                publications(sub.name)
+            }
+        }
     }
 }
 
@@ -85,13 +119,6 @@ artifactory {
             username = project.findProperty('cordaArtifactoryUsername') ?: System.getenv('CORDA_ARTIFACTORY_USERNAME') ?: System.getProperty('corda.artifactory.username')
             password = project.findProperty('cordaArtifactoryPassword') ?: System.getenv('CORDA_ARTIFACTORY_APIKEY') ?: System.getProperty('corda.artifactory.password')
         }
-
-        defaults {
-            // The root project has applied 'publish-utils' but has nothing to publish.
-            if (project != rootProject) {
-                publications(project.extensions.publish.name())
-            }
-        }
     }
 }
 
@@ -99,4 +126,3 @@ wrapper {
     gradleVersion = '7.2'
     distributionType = Wrapper.DistributionType.BIN
 }
-
