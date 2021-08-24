@@ -14,7 +14,7 @@ dependencies {
     bundle "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
-def jar = tasks.named('jar', Jar) {
+tasks.named('jar', Jar) {
     archiveVersion = kotlin_version
     archiveBaseName = 'kotlin-stdlib-jdk8-osgi'
 
