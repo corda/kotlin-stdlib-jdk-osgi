@@ -25,6 +25,7 @@ subprojects {
 
     configurations {
         bundle {
+            canBeConsumed = false
             transitive = false
         }
     }
@@ -95,7 +96,7 @@ artifactory {
 }
 
 wrapper {
-    gradleVersion = '7.1.1'
+    gradleVersion = '7.2'
     distributionType = Wrapper.DistributionType.BIN
 }
 

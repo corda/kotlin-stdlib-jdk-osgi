@@ -8,7 +8,10 @@ plugins {
 description 'The Kotlin Stdlib JDK7 extension as an OSGi bundle.'
 
 configurations {
-    osgi.extendsFrom runtimeClasspath
+    osgi {
+        extendsFrom runtimeClasspath
+        canBeResolved = false
+    }
 }
 
 dependencies {
