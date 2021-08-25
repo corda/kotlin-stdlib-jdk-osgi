@@ -20,8 +20,8 @@ tasks.named('jar', Jar) {
 
     bnd kotlinProvider
 
-    bnd """\
+    bnd '''\
 Bundle-SymbolicName: net.corda.kotlin-stdlib-jdk8.osgi-bundle
-Bundle-Name: Kotlin JDK8 classes
-"""
+Bundle-Name: Kotlin Standard Library JDK8 classes
+'''
 }
