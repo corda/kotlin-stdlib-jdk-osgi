@@ -72,9 +72,9 @@ subprojects { sub ->
                     }
 
                     pom {
-                        sub.afterEvaluate {
-                            name = sub.name
-                            description = sub.description
+                        afterEvaluate {
+                            name = it.name
+                            description = it.description
                         }
                         url = 'https://github.com/corda/kotlin-stdlib-jdk-osgi'
 
