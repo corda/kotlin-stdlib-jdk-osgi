@@ -1,0 +1,2 @@
+kotlin-stdlib-jdk7-osgi
+kotlin-stdlib-jdk8-osgi
