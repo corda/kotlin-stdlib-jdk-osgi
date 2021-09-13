@@ -58,13 +58,16 @@ subprojects { sub ->
                     pluginManager.withPlugin('java-library') {
                         from components.java
 
+                        def jarTask = tasks.named('jar', Jar)
                         artifact tasks.register('sourcesJar', Jar) {
+                            archiveBaseName = jarTask.flatMap { it.archiveBaseName }
                             archiveClassifier = 'sources'
                             from 'README.md'
                             include 'README.md'
                         }
 
                         artifact tasks.register('javadocJar', Jar) {
+                            archiveBaseName = jarTask.flatMap { it.archiveBaseName }
                             archiveClassifier = 'javadoc'
                             from 'README.md'
                             include 'README.md'
