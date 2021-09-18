@@ -55,7 +55,7 @@ subprojects { sub ->
         publishing {
             publications {
                 create(sub.name, MavenPublication) {
-                    pluginManager.withPlugin('java-library') {
+                    pluginManager.withPlugin('java') {
                         from components.java
 
                         def jarTask = tasks.named('jar', Jar)
