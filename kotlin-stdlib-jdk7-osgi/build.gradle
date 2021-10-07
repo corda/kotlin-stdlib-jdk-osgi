@@ -24,12 +24,14 @@ def jar = tasks.named('jar', Jar) {
     archiveVersion = kotlin_version
     archiveBaseName = 'kotlin-stdlib-jdk7-osgi'
 
-    bnd kotlinProvider
+    bundle {
+        bnd kotlinProvider
 
-    bnd '''\
+        bnd '''\
 Bundle-SymbolicName: net.corda.kotlin-stdlib-jdk7.osgi-bundle
 Bundle-Name: Kotlin Standard Library JDK7 classes
 '''
+    }
 }
 
 artifacts {
