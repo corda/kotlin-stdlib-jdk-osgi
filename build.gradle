@@ -54,7 +54,7 @@ subprojects { sub ->
     pluginManager.withPlugin('maven-publish') {
         publishing {
             publications {
-                create(sub.name, MavenPublication) {
+                register(sub.name, MavenPublication) {
                     pluginManager.withPlugin('java') {
                         from components.java
 
@@ -108,7 +108,7 @@ subprojects { sub ->
 
         pluginManager.withPlugin('com.jfrog.artifactory') {
             artifactoryPublish {
-                publications(sub.name)
+                publications sub.name
             }
         }
     }
