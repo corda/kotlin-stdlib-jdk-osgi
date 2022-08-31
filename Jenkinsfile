@@ -3,6 +3,5 @@
 cordaPipeline(
     publishRepoPrefix: 'corda-dependencies',
     slimBuild: true,
-    runUnitTests:false,
+    runUnitTests: false,
     )
-    
