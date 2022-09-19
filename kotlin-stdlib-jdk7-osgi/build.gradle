@@ -30,7 +30,12 @@ def jar = tasks.named('jar', Jar) {
         bnd '''\
 Bundle-SymbolicName: net.corda.kotlin-stdlib-jdk7.osgi-bundle
 Bundle-Name: Kotlin Standard Library JDK7 classes
-Import-Package: !android.os,*
+Import-Package: \
+    kotlin.*jdk7:o;provide:=true,\
+    kotlin.io.path.*:o;provide:=true,\
+    kotlin.*;version='${range;[===,==+);${@}}',\
+    android.os.*:o;resolution:=optional,\
+    *
 '''
     }
 }

@@ -24,7 +24,12 @@ tasks.named('jar', Jar) {
         bnd '''\
 Bundle-SymbolicName: net.corda.kotlin-stdlib-jdk8.osgi-bundle
 Bundle-Name: Kotlin Standard Library JDK8 classes
-Import-Package: !android.os,*
+Import-Package: \
+    kotlin.*jdk8:o;provide:=true,\
+    kotlin.jvm.optionals.*:o;provide:=true,\
+    kotlin.*;version='${range;[===,==+);${@}}',\
+    android.os.*:o;resolution:=optional,\
+    *
 '''
     }
 }
